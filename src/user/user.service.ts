@@ -3,15 +3,15 @@ import {
     ConflictException,
     Injectable,
 } from '@nestjs/common';
-import { UserDb } from '../model/userDb';
+import { User } from '../model/user';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(UserDb)
-        private usersRepository: Repository<UserDb>,
+        @InjectRepository(User)
+        private usersRepository: Repository<User>,
     ) {}
 
     async addUser(email: string): Promise<void> {
@@ -24,13 +24,11 @@ export class UserService {
         }
         const newUser = this.usersRepository.create({ email });
         await this.usersRepository.save(newUser);
-        console.log('new user created :' + newUser.email);
         return Promise.resolve();
     }
 
-    async getUser(email: string): Promise<UserDb> {
+    async getUser(email: string): Promise<User> {
         const user = await this.usersRepository.findOne({ where: { email } });
-        console.log('user found :' + user?.email + ' expected :' + email);
         if (user === null) {
             throw new BadRequestException('User not found');
         }

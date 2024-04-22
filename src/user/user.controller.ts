@@ -1,12 +1,12 @@
 import {
     BadRequestException,
     Body,
-    ConflictException,
-    Controller, Get,
+    Controller,
+    Get,
     Post,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserDb } from '../model/userDb';
+import { User } from '../model/user';
 
 @Controller()
 export class UserController {
@@ -30,7 +30,7 @@ export class UserController {
     }
 
     @Get()
-    async getUser(@Body() payload: { email: string }): Promise<UserDb> {
+    async getUser(@Body() payload: { email: string }): Promise<User> {
         // payload validation
         if (!payload.email) {
             throw new BadRequestException('Email is required');

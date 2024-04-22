@@ -2,8 +2,8 @@ import { AppRoutingModule } from './app.routing-module';
 import { ConfigurationModule } from './infrastructure/configuration/configuration.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserDb } from './model/userDb';
-import { TaskDb } from './model/taskDb';
+import { User } from './model/user';
+import { Task } from './model/task';
 import { ConfigurationService } from './infrastructure/configuration/configuration.service';
 
 @Module({
@@ -17,7 +17,7 @@ import { ConfigurationService } from './infrastructure/configuration/configurati
                 username: 'postgres',
                 password: 'postgres',
                 database: configService.databaseConfig['DATABASE_NAME'],
-                entities: [UserDb, TaskDb],
+                entities: [User, Task],
                 synchronize: true,
             }),
             inject: [ConfigurationService],
