@@ -1,22 +1,32 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { UserService } from '../user/user.service';
+import { Task } from '../model/task';
+import { TaskDb } from '../model/taskDb';
 
 @Injectable()
 export class TaskService {
-    constructor() {}
+    constructor(private readonly userService: UserService) {}
 
-    addTask(name: string, userId: string, priority: number): Promise<void> {
-        throw new NotImplementedException();
+    async addTask(
+        name: string,
+        userId: string,
+        priority: number,
+    ): Promise<void> {
+        await TaskDb.create({ name, userId, priority }).then((r) =>
+            console.log('task created' + r),
+        );
+        return Promise.resolve();
     }
 
-    getTaskByName(name: string): Promise<unknown> {
-        throw new NotImplementedException();
+    async getTaskByName(name: string): Promise<TaskDb> {
+        return await TaskDb.findOne({ where: { name } });
     }
 
-    getUserTasks(userId: string): Promise<unknown[]> {
-        throw new NotImplementedException();
+    getUserTasks(userId: string): Promise<TaskDb[]> {
+        return TaskDb.findAll({ where: { userId } });
     }
 
-    resetData(): Promise<void> {
-        throw new NotImplementedException();
+    async resetData() {
+        await TaskDb.destroy({ where: {} });
     }
 }

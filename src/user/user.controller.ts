@@ -1,12 +1,19 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+    BadRequestException,
+    Body,
+    ConflictException,
+    Controller, Get,
+    Post,
+} from '@nestjs/common';
 import { UserService } from './user.service';
+import { UserDb } from '../model/userDb';
 
 @Controller()
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @Post()
-    addUser(@Body() payload: { email: string }): void {
+    async addUser(@Body() payload: { email: string }): Promise<void> {
         // payload validation
         if (!payload.email) {
             throw new BadRequestException('Email and password are required');
@@ -17,7 +24,23 @@ export class UserController {
         if (!emailRegex.test(payload.email)) {
             throw new BadRequestException('Invalid email');
         }
-        this.userService.addUser(payload.email);
+        await this.userService.addUser(payload.email);
+
         return;
+    }
+
+    @Get()
+    async getUser(@Body() payload: { email: string }): Promise<UserDb> {
+        // payload validation
+        if (!payload.email) {
+            throw new BadRequestException('Email is required');
+        }
+
+        // Check email regex
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(payload.email)) {
+            throw new BadRequestException('Invalid email');
+        }
+        return this.userService.getUser(payload.email);
     }
 }

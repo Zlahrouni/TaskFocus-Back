@@ -1,35 +1,38 @@
 import {
     BadRequestException,
     ConflictException,
+    Inject,
     Injectable,
 } from '@nestjs/common';
-import { User } from '../model/user';
+import { UserDb } from '../model/userDb';
 
 @Injectable()
 export class UserService {
-    users: User[] = [];
     constructor() {}
 
-    addUser(email: string): Promise<void> {
-        if (this.users.find((user) => user.email === email)) {
+    async addUser(email: string): Promise<void> {
+        const user = await UserDb.findOne({ where: { email } });
+        if (user !== null) {
             throw new ConflictException('User with email already exists');
         }
-        const user = new User(this.users.length.toString(), email);
-        this.users.push(user);
-
+        UserDb.create({ email }).then((r) => console.log('user created' + r));
         return Promise.resolve();
     }
 
-    getUser(email: string): Promise<unknown> {
-        const user = this.users.find((user) => user.email === email);
-        if (!user) {
+    async getUser(email: string): Promise<UserDb> {
+        const user = await UserDb.findOne({ where: { email } });
+        console.log('user found :' + user?.email + ' expected :' + email);
+        if (user === null) {
             throw new BadRequestException('User not found');
         }
-        return Promise.resolve(user);
+        return user;
     }
 
-    resetData(): Promise<void> {
-        this.users = [];
-        return Promise.resolve();
+    async resetData() {
+        await UserDb.destroy({ where: {} });
+    }
+
+    getUserById(userId: string) {
+        return UserDb.findByPk(userId);
     }
 }
