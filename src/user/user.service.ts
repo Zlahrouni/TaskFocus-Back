@@ -1,18 +1,45 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import {
+    BadRequestException,
+    ConflictException,
+    Injectable,
+} from '@nestjs/common';
+import { User } from '../model/user';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
-    constructor() {}
+    constructor(
+        @InjectRepository(User)
+        private usersRepository: Repository<User>,
+    ) {}
 
-    addUser(email: string): Promise<void> {
-        throw new NotImplementedException();
+    async addUser(email: string): Promise<void> {
+        const user = await this.usersRepository.findOne({
+            where: { email: email },
+        });
+
+        if (user !== null) {
+            throw new ConflictException('User with email already exists');
+        }
+        const newUser = this.usersRepository.create({ email });
+        await this.usersRepository.save(newUser);
+        return Promise.resolve();
     }
 
-    getUser(email: string): Promise<unknown> {
-        throw new NotImplementedException();
+    async getUser(email: string): Promise<User> {
+        const user = await this.usersRepository.findOne({ where: { email } });
+        if (user === null) {
+            throw new BadRequestException('User not found');
+        }
+        return user;
     }
 
-    resetData(): Promise<void> {
-        throw new NotImplementedException();
+    async resetData() {
+        await this.usersRepository.clear();
+    }
+
+    async getUserById(id: string) {
+        return await this.usersRepository.findOne({ where: { id } });
     }
 }
