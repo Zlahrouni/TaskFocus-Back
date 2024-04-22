@@ -1,32 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { UserService } from '../user/user.service';
-import { Task } from '../model/task';
 import { TaskDb } from '../model/taskDb';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TaskService {
-    constructor(private readonly userService: UserService) {}
+    constructor(
+        @InjectRepository(TaskDb)
+        private tasksRepository: Repository<TaskDb>,
+    ) {}
 
     async addTask(
         name: string,
         userId: string,
         priority: number,
-    ): Promise<void> {
-        await TaskDb.create({ name, userId, priority }).then((r) =>
-            console.log('task created' + r),
-        );
-        return Promise.resolve();
+    ): Promise<TaskDb> {
+        const task = this.tasksRepository.create({ userId, name, priority });
+        return await this.tasksRepository.save(task);
     }
 
     async getTaskByName(name: string): Promise<TaskDb> {
-        return await TaskDb.findOne({ where: { name } });
+        return await this.tasksRepository.findOne({ where: { name } });
     }
 
     getUserTasks(userId: string): Promise<TaskDb[]> {
-        return TaskDb.findAll({ where: { userId } });
+        return this.tasksRepository.find({ where: { userId } });
     }
 
     async resetData() {
-        await TaskDb.destroy({ where: {} });
+        await this.tasksRepository.clear();
     }
 }

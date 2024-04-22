@@ -1,24 +1,22 @@
-import { Column, Model, Table, DataType, PrimaryKey, AutoIncrement } from 'sequelize-typescript';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Table
-export class TaskDb extends Model {
-    @PrimaryKey
-    @AutoIncrement
-    @Column(DataType.INTEGER) // Use INTEGER for auto-incrementing ID
-    id: number;
+@Entity()
+export class TaskDb {
+    @PrimaryGeneratedColumn()
+    id: string;
 
-    @Column({ allowNull: false })
+    @Column()
     userId: string;
 
-    @Column
+    @Column()
     name: string;
 
-    @Column
+    @Column()
     priority: number;
 
-    @Column(DataType.DATE)
+    @Column({ default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
-    @Column(DataType.DATE)
+    @Column({ default: () => 'CURRENT_TIMESTAMP' })
     updatedAt: Date;
 }

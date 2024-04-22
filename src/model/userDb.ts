@@ -1,18 +1,16 @@
-import { Column, Model, Table, DataType, PrimaryKey, AutoIncrement } from 'sequelize-typescript';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Table
-export class UserDb extends Model {
-    @PrimaryKey
-    @AutoIncrement
-    @Column(DataType.INTEGER)
-    id: number;
+@Entity()
+export class UserDb {
+    @PrimaryGeneratedColumn()
+    id: string;
 
-    @Column({ allowNull: false, unique: true })
+    @Column({ unique: true })
     email: string;
 
-    @Column(DataType.DATE) // Use Sequelize.DATE for timestamp
+    @Column({ default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
-    @Column(DataType.DATE) // Use Sequelize.DATE for timestamp
+    @Column({ default: () => 'CURRENT_TIMESTAMP' })
     updatedAt: Date;
 }
