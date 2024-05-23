@@ -20,7 +20,7 @@ What things you need to install the software and how to install them.
 1. Clone the repo
 2. Install NPM packages
  ```sh
-   npm install 
+   npm ci 
   ```
 3. Start the server with docker
  ```sh
